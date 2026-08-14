@@ -41,15 +41,33 @@ $ python test_harness.py
  8/8 checks passed
 ```
 
+## Validated live against IBKR
+
+Beyond the offline suite, the engine has been run against a **live Interactive Brokers paper account** over the TWS API — strictly read-only (it observes and reconciles; it never places orders):
+
+- **Connect + reconcile** — attaches to the paper session, pulls the broker's own open-orders / positions snapshot, and reconciles clean.
+- **Real order capture** — a market order placed *by hand* in TWS was captured end-to-end by the read-only engine and reconstructed independently:
+
+```
+ OUR ENGINE reconstructed state from real IBKR data
+ order: EUR SELL  filled 20000/20000 @ avg 1.15539  state=FILLED
+ engine positions : {'EUR': -20000.0}
+ broker positions : {'EUR': -20000.0}
+ reconciliation   : CLEAN (engine matches broker)
+```
+
+A person placed the order; the engine tracked every transition (Submitted → Filled), summed the fill, derived the position, and matched the broker exactly — the read-only, human-in-the-loop model this kind of system needs.
+
 ## Run it
 
 ```bash
 # offline integrity checks — no account, no broker
 python test_harness.py
 
-# live paper: start IB Gateway in PAPER mode with the API enabled, then
+# live paper (read-only) — start TWS or IB Gateway in PAPER mode with the API enabled, then:
 pip install ib_async
-python ib_gateway.py            # defaults to 127.0.0.1:4002 (Gateway paper)
+python run_live_tws.py       # connect + reconcile against the paper account (TWS port 7497)
+python run_live_listen.py    # observe orders placed by hand in TWS, read-only
 ```
 
 Boundaries respected: paper-first, read-and-reconcile before acting, and existing safety checks are never weakened to make a test pass.
