@@ -84,6 +84,13 @@ def t_stale_status():
     check("4b. 'Filled' status without executions rejected",
           b2.orders[5].state == OrderState.SUBMITTED,
           f"state={b2.orders[5].state.name} (expected SUBMITTED)")
+    # a stray Cancelled must NOT flip a filled order -- terminal states are final:
+    b3 = OrderBook(); b3.place(8, "META", "BUY", 5)
+    b3.on_execution(8, "e8", 5, 500.0)               # filled
+    b3.on_status(8, "Cancelled")                      # stray cancel arrives afterwards
+    check("4c. stray 'Cancelled' after fill ignored",
+          b3.orders[8].state == OrderState.FILLED,
+          f"state={b3.orders[8].state.name} (expected FILLED)")
 
 
 # 5. Reconciliation detects drift --------------------------------------------

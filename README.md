@@ -36,8 +36,9 @@ $ python test_harness.py
  [OK] 3b. completes + quantity-weighted avg price
  [OK] 4. stale 'Submitted' after fill ignored
  [OK] 4b. 'Filled' status without executions rejected
+ [OK] 4c. stray 'Cancelled' after fill ignored
  [OK] 5. reconciliation flags missing order + position drift
- 7/7 checks passed
+ 8/8 checks passed
 ```
 
 ## Run it

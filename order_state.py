@@ -70,8 +70,11 @@ class Order:
         return round(sum(e.qty * e.price for e in self._execs.values()) / f, 6)
 
     def _advance(self, new: OrderState) -> None:
-        # Never move backward (a late SUBMITTED must not undo a FILLED).
-        if new > self.state or new.is_terminal and not self.state.is_terminal:
+        # Terminal states are final; otherwise state only moves forward. This
+        # guards against a stray Cancelled/Submitted mutating a Filled order.
+        if self.state.is_terminal:
+            return
+        if new > self.state:
             self.state = new
 
 
