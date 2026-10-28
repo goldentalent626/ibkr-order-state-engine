@@ -69,7 +69,3 @@ pip install ib_async
 python run_live_tws.py       # connect + reconcile against the paper account (TWS port 7497)
 python run_live_listen.py    # observe orders placed by hand in TWS, read-only
 ```
-
----
-
-<sub>Built &amp; maintained by **Quiet Machines** — the quiet machines that run your business. · by Cristian Lungu</sub>
